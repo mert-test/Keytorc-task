@@ -2,7 +2,6 @@ package com.keytorc.tests;
 
 
 import java.util.List;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -85,14 +84,14 @@ public class tests {
 		else
 			System.out.println("Şu an"+driver.findElement(By.cssSelector("a[class^='active']")).getText()+". sayfadasınız");
 		
-		//sayfadaki ürünlerin yerleri değişse bile 3. ürünü seç
+		//Sayfadaki ürünlerin yerleri değişse bile 3. ürünü seç
 		WebElement thirdProduct= driver.findElement(By.xpath("//div[@id='view']/ul[1]/li[3]/div[1]/div[1]/a/h3"));
 		thirdProduct.click();
 		Thread.sleep(2000);
 		
-		//Bazı ürünlerde renk seçmeden favorilere eklenemiyor
+		//Bazı ürünler renk seçilmeden favorilere eklenemiyor
 		//Bu yüzden eğer option'ı olan bir ürünse kontrol et
-		if(driver.findElements(By.tagName("select")).size()!=0){			
+		if(driver.findElements(By.xpath("//div[@id='skuArea']/fieldset/select")).size()!=0){			
 			WebElement option = driver.findElement(By.xpath("//form[@class='proOpt form horizontal']/div/fieldset/select/option[2]"));
 			option.click();		
 		}
@@ -107,7 +106,7 @@ public class tests {
 		Actions action = new Actions(driver);	
 		WebElement menu = driver.findElement(By.xpath("//div[@class='customMenu']/div[1]/div[1]"));
 		action.moveToElement(menu).perform();
-		Thread.sleep(3000);
+		Thread.sleep(2000);
 		
 		//Hesabım hover menusunden favorilere tıkla
 		WebElement favoriler=driver.findElement(By.xpath("//div[@class='hOpenMenuContent']/a[@title='Favorilerim']"));
@@ -133,12 +132,16 @@ public class tests {
 			System.out.println("favorilerde hiç ürün yok");
 		Thread.sleep(2000);
 		
-		//*[@id="watchList"]/tbody/tr[3]/td[1]/a
-		String deneme;
-		deneme=driver.findElement(By.className("removeSelectedProduct")).getCssValue("value");
-		System.out.println(deneme);
+		//Az once eklenen urunu favorilerden kaldır
+		if(!driver.findElements(By.xpath("//*[@id='watchList']/tbody/tr[1]/td[1]/a")).isEmpty()){
+			driver.findElement(By.xpath("//*[@id='watchList']/tbody/tr[1]/td[1]/a")).click();
+			System.out.println("Urun favorilerden kaldırıldı");
+		}
+		
+		if(driver.findElements(By.linkText(urunAdi)).isEmpty()){
+			System.out.println("Ürün artık favorilerde değil");
 
-		
-		
-}
+		}
+
+	}		
 }
