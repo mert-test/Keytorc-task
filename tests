@@ -1,0 +1,144 @@
+package com.keytorc.tests;
+
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
+
+public class tests {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		
+		WebDriver driver=new FirefoxDriver();
+		driver.get("http://www.facebook.com.tr");
+		Thread.sleep(4000);
+		
+		//İstenen alanları bul ve doldur
+		driver.findElement(By.id("email")).clear();
+		driver.findElement(By.id("email")).sendKeys("mert.test.144@gmail.com");
+		driver.findElement(By.id("pass")).clear();
+		driver.findElement(By.id("pass")).sendKeys("tester1234");
+		String password=driver.findElement(By.id("pass")).getAttribute("value").toString();
+		
+		//parola boş değilse logine tıkla
+		if(!password.isEmpty()){
+			driver.findElement(By.id("u_0_v")).click();		
+		}
+		else{
+			System.out.println("Parolayı girin!");
+		}
+		Thread.sleep(2000);
+		
+		//facebook'a giriş yaptıktan sonra n11 sitesine git
+		driver.get("http://www.n11.com");		
+		String url=driver.getCurrentUrl().toString();	
+		
+		//anasayfanın açıldığını doğrula
+		try{
+		Assert.assertEquals("http://www.n11.com/", driver.getCurrentUrl().toString());
+		System.out.println("Açılan sayfa: "+url);
+		}
+		catch (Throwable e){
+		System.out.println("Açılan sayfa http://www.n11.com değil!");
+		}
+		Thread.sleep(2000);
+		
+		//sign in butonuna tıkla
+		driver.findElement(By.className("btnSignIn")).click();
+		Thread.sleep(4000);
+		
+		//gerekli alanları doldur ve login butonuna tıkla
+		driver.findElement(By.id("email")).clear();
+		driver.findElement(By.id("email")).sendKeys("mert.test.144@gmail.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("tester1234");
+		driver.findElement(By.id("loginButton")).click();
+		Thread.sleep(2000);
+		
+		//arama alanını bul ve samsung kelimesini ara
+		driver.findElement(By.id("searchData")).clear();
+		driver.findElement(By.id("searchData")).sendKeys("samsung");
+		driver.findElement(By.className("searchBtn")).click();
+		Thread.sleep(2000);
+		
+		//ürün bulunamazsa uyarı ver
+			if(driver.findElements(By.id("searchResultNotFound")).size()!=0)
+				System.out.println("arama sonucunda ürün bulunamadı");
+			
+			else
+				System.out.println("arama sonucunda ürün bulundu");
+		
+		//arama sonuçlarından 2.sayfaya geç
+		WebElement secondPage = driver.findElement(By.linkText("2"));
+		secondPage.click();
+		Thread.sleep(2000);
+	
+		//Aktif sayfayı bul.2.sayfanın gösterimde olduğunu doğrula
+		if(driver.findElement(By.cssSelector("a[class^='active']")).getText().equals("2"))
+			System.out.println("Şu an 2. sayfadasınız");
+		else
+			System.out.println("Şu an"+driver.findElement(By.cssSelector("a[class^='active']")).getText()+". sayfadasınız");
+		
+		//sayfadaki ürünlerin yerleri değişse bile 3. ürünü seç
+		WebElement thirdProduct= driver.findElement(By.xpath("//div[@id='view']/ul[1]/li[3]/div[1]/div[1]/a/h3"));
+		thirdProduct.click();
+		Thread.sleep(2000);
+		
+		//Bazı ürünlerde renk seçmeden favorilere eklenemiyor
+		//Bu yüzden eğer option'ı olan bir ürünse kontrol et
+		if(driver.findElements(By.tagName("select")).size()!=0){			
+			WebElement option = driver.findElement(By.xpath("//form[@class='proOpt form horizontal']/div/fieldset/select/option[2]"));
+			option.click();		
+		}
+		//Ürünü favorilere ekle
+		driver.findElement(By.xpath("//span[@id='addToFavourites']")).click();
+		Thread.sleep(2000);
+		
+		//Favorilere eklediğimiz ürünün adını al
+		String urunAdi=driver.findElement(By.cssSelector("h1[class^='proName']")).getText();
+		
+		//Favorilere erişmek için hesabım hover menusunu aç
+		Actions action = new Actions(driver);	
+		WebElement menu = driver.findElement(By.xpath("//div[@class='customMenu']/div[1]/div[1]"));
+		action.moveToElement(menu).perform();
+		Thread.sleep(3000);
+		
+		//Hesabım hover menusunden favorilere tıkla
+		WebElement favoriler=driver.findElement(By.xpath("//div[@class='hOpenMenuContent']/a[@title='Favorilerim']"));
+		action.moveToElement(favoriler);
+		Thread.sleep(3000);
+		action.click().perform();
+		
+		//Hesabım Hover menüsünü kapat
+		WebElement closeHover=driver.findElement(By.id("breadCrumb"));
+		action.moveToElement(closeHover).perform();
+		
+		//Favorilerde hiç ürün var mı?
+		if(! driver.findElements(By.xpath("//*[@class='productTitle']")).isEmpty()){
+			String favorilerUrun=driver.findElement(By.linkText(urunAdi)).getText();
+			//Az önce eklenen ürün favoriler arasında mı?
+			if(favorilerUrun.equals(urunAdi)){
+				System.out.println("Urun favoriler arasında bulundu");
+			}
+			else
+				System.out.println("Urun favoriler arasında bulunamadı");
+		}
+		else
+			System.out.println("favorilerde hiç ürün yok");
+		Thread.sleep(2000);
+		
+		//*[@id="watchList"]/tbody/tr[3]/td[1]/a
+		String deneme;
+		deneme=driver.findElement(By.className("removeSelectedProduct")).getCssValue("value");
+		System.out.println(deneme);
+
+		
+		
+}
+}
